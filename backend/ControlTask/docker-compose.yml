@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: controltask-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong@Passw0rd"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - controltask-network
+
+  api:
+    build:
+      context: ./backend/ControlTask
+      dockerfile: Dockerfile
+    container_name: controltask-api
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__DefaultConnection=Data Source=sqlserver;Initial Catalog=TeamTasksSample;User ID=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5295:80"
+    networks:
+      - controltask-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend/controltask-frontend
+      dockerfile: Dockerfile
+    container_name: controltask-frontend
+    depends_on:
+      - api
+    ports:
+      - "4200:80"
+    networks:
+      - controltask-network
+
+networks:
+  controltask-network:
+    driver: bridge
+
+volumes:
+  sqlserver-data:

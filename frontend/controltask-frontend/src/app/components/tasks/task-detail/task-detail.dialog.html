@@ -1,0 +1,72 @@
+<h2 mat-dialog-title>Detalles de la Tarea</h2>
+    
+    <mat-dialog-content>
+      <div class="task-detail">
+        <div class="detail-section">
+          <h3>{{ data.title }}</h3>
+          <p class="description" *ngIf="data.description">{{ data.description }}</p>
+          <p class="no-description" *ngIf="!data.description">Sin descripción</p>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="metadata">
+          <div class="metadata-item">
+            <strong>Proyecto:</strong>
+            <span>{{ data.projectName }}</span>
+          </div>
+          
+          <div class="metadata-item">
+            <strong>Asignado a:</strong>
+            <span>{{ data.assigneeName }}</span>
+          </div>
+          
+          <div class="metadata-item">
+            <strong>Estado:</strong>
+            <span class="status-badge" [class]="getStatusClass(data.status)">
+              {{ data.status }}
+            </span>
+          </div>
+          
+          <div class="metadata-item">
+            <strong>Prioridad:</strong>
+            <span class="priority-badge" [class]="getPriorityClass(data.priority)">
+              {{ data.priority }}
+            </span>
+          </div>
+          
+          <div class="metadata-item" *ngIf="data.estimatedComplexity">
+            <strong>Complejidad:</strong>
+            <span class="complexity">
+              <span *ngFor="let i of [1,2,3,4,5]" 
+                    [class.filled]="i <= data.estimatedComplexity!"
+                    class="complexity-dot">
+                •
+              </span>
+              ({{ data.estimatedComplexity }}/5)
+            </span>
+          </div>
+          
+          <div class="metadata-item">
+            <strong>Creada:</strong>
+            <span>{{ formatDate(data.createdAt) }}</span>
+          </div>
+          
+          <div class="metadata-item" *ngIf="data.dueDate">
+            <strong>Vence:</strong>
+            <span [class.overdue]="isOverdue(data.dueDate, data.status)">
+              {{ formatDate(data.dueDate) }}
+            </span>
+          </div>
+          
+          <div class="metadata-item" *ngIf="data.completionDate">
+            <strong>Completada:</strong>
+            <span>{{ formatDate(data.completionDate) }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cerrar</button>
+    </mat-dialog-actions>

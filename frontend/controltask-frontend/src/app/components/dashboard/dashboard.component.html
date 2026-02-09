@@ -1,0 +1,192 @@
+<div class="dashboard-container">
+  <h1>Dashboard - BTW</h1>
+  <!-- ================= KPI ================= -->
+  <div class="kpi-container" *ngIf="!loading.workload && !loading.projects && !loading.risk">
+    <mat-card class="kpi-card">
+      <span class="kpi-title">Proyectos activos</span>
+      <span class="kpi-value">{{ projectHealth.length }}</span>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <span class="kpi-title">Tareas abiertas</span>
+      <span class="kpi-value">{{ totalOpenTasks }}</span>
+    </mat-card>
+
+    <mat-card class="kpi-card high-risk">
+      <span class="kpi-title">Devs en alto riesgo</span>
+      <span class="kpi-value">{{ highRiskDevelopers }}</span>
+    </mat-card>
+  </div>
+  
+  <!-- Sección 1: Carga por desarrollador -->
+  <div class="dashboard-section">
+    <h2>Carga por Desarrollador</h2>
+    
+    <div *ngIf="loading.workload" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Cargando carga por desarrollador...</span>
+    </div>
+    
+    <div *ngIf="!loading.workload" class="table-container">
+      <table mat-table [dataSource]="developerWorkload" class="mat-elevation-z2" >
+        <!-- Columna Desarrollador -->
+        <ng-container matColumnDef="developerName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by developerName"> Desarrollador </th>
+          <td mat-cell *matCellDef="let element"> {{element.developerName}} </td>
+        </ng-container>
+
+        <!-- Columna Tareas Abiertas -->
+        <ng-container matColumnDef="openTasksCount">
+          <th mat-header-cell *matHeaderCellDef> Tareas Abiertas </th>
+          <td mat-cell *matCellDef="let element"> 
+            <span class="task-count" [class.high-count]="element.openTasksCount > 5">
+              {{element.openTasksCount}}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Columna Complejidad Estimada -->
+        <ng-container matColumnDef="averageEstimatedComplexity">
+          <th mat-header-cell *matHeaderCellDef> Complejidad total estimada </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{formatComplexity(element.averageEstimatedComplexity)}}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="developerWorkloadColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: developerWorkloadColumns;"></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Sección 2: Estado por proyecto -->
+  <div class="dashboard-section">
+    <h2>Estado por Proyecto</h2>
+    
+    <div *ngIf="loading.projects" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Cargando estado de proyectos...</span>
+    </div>
+    
+    <div *ngIf="!loading.projects" class="table-container">
+      <table mat-table [dataSource]="projectHealth" class="mat-elevation-z2">
+        <!-- Columna Proyecto -->
+        <ng-container matColumnDef="projectName">
+          <th mat-header-cell *matHeaderCellDef> Proyecto </th>
+          <td mat-cell *matCellDef="let element" [class.highlight-row]="highlightProjectRow(element)">
+            <a [routerLink]="['/tasks', element.projectId]" class="project-link">
+              {{ element.projectName }}
+            </a>
+          </td>           
+        </ng-container>
+
+        <!-- Columna Cliente -->
+        <ng-container matColumnDef="clientName">
+          <th mat-header-cell *matHeaderCellDef> Cliente </th>
+          <td mat-cell *matCellDef="let element" [class.highlight-row]="highlightProjectRow(element)">
+            {{element.clientName}}
+          </td>
+        </ng-container>
+
+        <!-- Columna Total Tareas -->
+        <ng-container matColumnDef="totalTasks">
+          <th mat-header-cell *matHeaderCellDef> Total Tareas </th>
+          <td mat-cell *matCellDef="let element" [class.highlight-row]="highlightProjectRow(element)"> {{element.totalTasks}} </td>
+        </ng-container>
+
+        <!-- Columna Tareas Abiertas -->
+        <ng-container matColumnDef="openTasks">
+          <th mat-header-cell *matHeaderCellDef> Abiertas </th>
+          <td mat-cell *matCellDef="let element" [class.highlight-row]="highlightProjectRow(element)"> 
+            <span class="open-tasks">{{element.openTasks}}</span>
+          </td>
+        </ng-container>
+
+        <!-- Columna Tareas Completadas -->
+        <ng-container matColumnDef="completedTasks">
+          <th mat-header-cell *matHeaderCellDef> Completadas </th>
+          <td mat-cell *matCellDef="let element" [class.highlight-row]="highlightProjectRow(element)"> 
+            <span class="completed-tasks">{{element.completedTasks}}</span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="projectHealthColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: projectHealthColumns;"></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Sección 3: Riesgo de retraso -->
+  <div class="dashboard-section">
+    <h2>Riesgo de Retraso por Desarrollador</h2>
+    
+    <div *ngIf="loading.risk" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Cargando análisis de riesgo...</span>
+    </div>
+    
+    <div *ngIf="!loading.risk" class="table-container">
+      <table mat-table [dataSource]="developerDelayRisk" class="mat-elevation-z2">
+        <!-- Columna Desarrollador -->
+        <ng-container matColumnDef="developerName">
+          <th mat-header-cell *matHeaderCellDef>  DeveloperName </th>
+          <td mat-cell *matCellDef="let element"> {{element.developerName}} </td>
+        </ng-container>
+
+        <!-- Columna Tareas Abiertas -->
+        <ng-container matColumnDef="openTasksCount">
+          <th mat-header-cell *matHeaderCellDef> OpenTasksCount </th>
+          <td mat-cell *matCellDef="let element"> {{element.openTasksCount}} </td>
+        </ng-container>
+
+        <!-- Columna Días de Retraso Promedio -->
+        <ng-container matColumnDef="avgDelayDays">
+          <th mat-header-cell *matHeaderCellDef> AvgDelayDays </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{element.avgDelayDays.toFixed(1)}}
+          </td>
+        </ng-container>
+
+        <!-- Columna Fecha Vencimiento Más Cercana -->
+        <ng-container matColumnDef="nearestDueDate">
+          <th mat-header-cell *matHeaderCellDef> NearestDueDate </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{formatDate(element.nearestDueDate)}}
+          </td>
+        </ng-container>
+
+        <!-- Columna Última Fecha Vencimiento -->
+        <ng-container matColumnDef="latestDueDate">
+          <th mat-header-cell *matHeaderCellDef> LatestDueDate </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{formatDate(element.latestDueDate)}}
+          </td>
+        </ng-container>
+
+        <!-- Columna Fecha Completitud Predicha -->
+        <ng-container matColumnDef="predictedCompletionDate">
+          <th mat-header-cell *matHeaderCellDef> PredictedCompletionDate </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{formatDate(element.predictedCompletionDate)}}
+          </td>
+        </ng-container>
+
+        <!-- Columna Bandera Alto Riesgo -->
+        <ng-container matColumnDef="highRiskFlag">
+          <th mat-header-cell *matHeaderCellDef> HighRiskFlag </th>
+          <td mat-cell *matCellDef="let element"> 
+            <span *ngIf="element.highRiskFlag" class="high-risk-badge">
+              <mat-icon>warning</mat-icon> Alto Riesgo
+            </span>
+            <span *ngIf="!element.highRiskFlag" class="low-risk-badge">
+              <mat-icon>check_circle</mat-icon> Bajo Riesgo
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="delayRiskColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: delayRiskColumns;"></tr>
+      </table>
+    </div>
+  </div>
+</div>

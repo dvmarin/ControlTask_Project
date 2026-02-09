@@ -1,0 +1,285 @@
+/* ================= VARIABLES ================= */
+$primary: #3f51b5;
+$bg-light: #f5f7fb;
+$border: #e0e0e0;
+$text-muted: #6b7280;
+
+/* ================= CONTENEDOR ================= */
+.project-detail-container {
+  padding: 24px;
+  background: $bg-light;
+  min-height: 100vh;
+}
+
+/* ================= HEADER ================= */
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+
+  .project-info {
+    h1 {
+      margin: 0 0 15px 0;
+      color: #111827;
+      font-size: 26px;
+      font-weight: 600;
+    }
+  }
+
+  .project-meta {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    color: $text-muted;
+    font-size: 14px;
+
+    .client {
+      font-weight: 500;
+    }
+
+    .status {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+
+      &.planned {
+        background-color: #e3f2fd;
+        color: #1976d2;
+      }
+
+      &.inprogress {
+        background-color: #fff3e0;
+        color: #f57c00;
+      }
+
+      &.completed {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
+    }
+
+    .dates {
+      color: $text-muted;
+    }
+  }
+}
+
+/* ================= ESTADÍSTICAS ================= */
+.project-stats {
+  display: flex;
+  gap: 20px;
+
+  .stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    min-width: 100px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+
+      &.open {
+        color: #ff9800;
+      }
+
+      &.completed {
+        color: #4caf50;
+      }
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: $text-muted;
+      text-transform: uppercase;
+    }
+  }
+}
+
+/* ================= ACCIONES ================= */
+.project-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  button {
+    min-width: 160px;
+    background: $primary;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+
+    &:hover {
+      background: darken($primary, 10%);
+    }
+  }
+}
+
+/* ================= FILTROS ================= */
+.filters-container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+
+  .filter-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+
+    .filter-field {
+      min-width: 200px;
+    }
+
+    .clear-filters {
+      margin-left: auto;
+      cursor: pointer;
+      color: $primary;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+/* ================= TAREAS ================= */
+.tasks-container {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+
+  .tasks-table {
+    overflow-x: auto;
+
+    .task-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: $primary;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      .view-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      &:hover .view-icon {
+        opacity: 1;
+      }
+    }
+  }
+
+  .no-tasks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: $text-muted;
+
+    mat-icon {
+      font-size: 60px;
+      width: 60px;
+      height: 60px;
+      margin-bottom: 20px;
+      color: #c7cdd8;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+  }
+}
+
+/* ================= PRIORIDADES Y COMPLEJIDAD ================= */
+.priority-badge,
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.complexity {
+  display: flex;
+  gap: 2px;
+
+  .complexity-dot {
+    font-size: 20px;
+    color: #e0e0e0;
+
+    &.filled {
+      color: #ff9800;
+    }
+  }
+}
+
+.overdue {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .project-header {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .project-stats {
+    flex-wrap: wrap;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+
+    .filter-field {
+      width: 100%;
+    }
+
+    .clear-filters {
+      margin-left: 0;
+    }
+  }
+
+  .project-actions {
+    width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
+}

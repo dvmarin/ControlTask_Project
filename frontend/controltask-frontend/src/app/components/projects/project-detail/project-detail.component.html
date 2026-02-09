@@ -1,0 +1,187 @@
+<div class="project-detail-container">
+  <!-- Cargando proyecto -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando información del proyecto...</p>
+  </div>
+
+  <!-- Información del proyecto -->
+  <div *ngIf="!loading && project" class="project-header">
+    <div class="project-info">
+      <h1>{{ project.name }}</h1>
+      <div class="project-meta">
+        <span class="client">Cliente: {{ project.clientName }}</span>
+        <span class="status" [class]="project.status.toLowerCase()">
+          {{ project.status }}
+        </span>
+        <span class="dates">
+          {{ formatDate(project.startDate) }} - {{ formatDate(project.endDate) }}
+        </span>
+      </div>
+      <div class="project-stats">
+        <div class="stat-card">
+          <span class="stat-number">{{ project.totalTasks }}</span>
+          <span class="stat-label">Total Tareas</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number open">{{ project.openTasks }}</span>
+          <span class="stat-label">Abiertas</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number completed">{{ project.completedTasks }}</span>
+          <span class="stat-label">Completadas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-actions">
+      <button mat-raised-button color="primary" (click)="navigateToNewTask()">
+        <mat-icon>add</mat-icon> Nueva Tarea
+      </button>
+      <button mat-button routerLink="/projects">
+        <mat-icon>arrow_back</mat-icon> Volver a Proyectos
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-container">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Estado</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="applyFilters()">
+          <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+            {{ status.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Asignado a</mat-label>
+        <mat-select [(ngModel)]="selectedAssigneeId" (selectionChange)="applyFilters()">
+          <mat-option [value]="null">Todos</mat-option>
+          <mat-option *ngFor="let dev of developers" [value]="dev.developerId">
+            {{ dev.fullName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-button (click)="clearFilters()" class="clear-filters">
+        <mat-icon>clear</mat-icon> Limpiar Filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- TÍTULO DE DISTRIBUCIÓN DE TAREAS (NUEVO) -->
+  <div class="tasks-title" *ngIf="!loadingTasks && tasks.length > 0">
+    <h2>Distribución de Tareas - {{ project?.name }}</h2>
+  </div>
+
+  <!-- Tabla de tareas -->
+  <div class="tasks-container">
+    <div *ngIf="loadingTasks" class="loading-tasks">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Cargando tareas...</span>
+    </div>
+
+    <div *ngIf="!loadingTasks && tasks.length === 0" class="no-tasks">
+      <mat-icon>assignment</mat-icon>
+      <p>No hay tareas para este proyecto</p>
+      <button mat-raised-button color="primary" (click)="navigateToNewTask()">
+        <mat-icon>add</mat-icon> Crear Primera Tarea
+      </button>
+    </div>
+
+    <div *ngIf="!loadingTasks && tasks.length > 0" class="tasks-table">
+      <table mat-table [dataSource]="tasks" class="mat-elevation-z2">
+        <!-- Título -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef> Título </th>
+          <td mat-cell *matCellDef="let task">
+            <div class="task-title" (click)="viewTaskDetails(task)">
+              {{ task.title }}
+              <mat-icon class="view-icon" matTooltip="Ver detalles">visibility</mat-icon>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Asignado a -->
+        <ng-container matColumnDef="assigneeName">
+          <th mat-header-cell *matHeaderCellDef> Asignado a </th>
+          <td mat-cell *matCellDef="let task"> {{ task.assigneeName }} </td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Estado </th>
+          <td mat-cell *matCellDef="let task">
+            <span class="status-badge" [class]="getStatusClass(task.status)">
+              {{ task.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Prioridad -->
+        <ng-container matColumnDef="priority">
+          <th mat-header-cell *matHeaderCellDef> Prioridad </th>
+          <td mat-cell *matCellDef="let task">
+            <span class="priority-badge" [class]="getPriorityClass(task.priority)">
+              {{ task.priority }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Complejidad -->
+        <ng-container matColumnDef="estimatedComplexity">
+          <th mat-header-cell *matHeaderCellDef> Complejidad </th>
+          <td mat-cell *matCellDef="let task">
+            <div class="complexity" *ngIf="task.estimatedComplexity">
+              <span *ngFor="let i of [1,2,3,4,5]" 
+                    [class.filled]="i <= task.estimatedComplexity!"
+                    class="complexity-dot">
+                •
+              </span>
+            </div>
+            <span *ngIf="!task.estimatedComplexity">N/A</span>
+          </td>
+        </ng-container>
+
+        <!-- Fecha Creación -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef> Creada </th>
+          <td mat-cell *matCellDef="let task"> {{ formatDate(task.createdAt) }} </td>
+        </ng-container>
+
+        <!-- Fecha Vencimiento -->
+        <ng-container matColumnDef="dueDate">
+          <th mat-header-cell *matHeaderCellDef> Vence </th>
+          <td mat-cell *matCellDef="let task" 
+              [class.overdue]="isOverdue(task)">
+            {{ formatDate(task.dueDate) }}
+          </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Acciones </th>
+          <td mat-cell *matCellDef="let task">
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <!-- Paginación -->
+      <mat-paginator 
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        [pageIndex]="pageIndex"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        aria-label="Seleccionar página de tareas">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

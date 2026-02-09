@@ -1,0 +1,112 @@
+/* Importar estilos de Material */
+@use '@angular/material' as mat;
+@include mat.core();
+
+/* Variables globales */
+:root {
+  --primary-color: #3f51b5;
+  --secondary-color: #f50057;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --danger-color: #f44336;
+  --light-bg: #f5f5f5;
+  --dark-text: #212121;
+  --light-text: #757575;
+}
+
+/* Estilos globales */
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--light-bg);
+}
+
+.container {
+  padding: 20px;
+}
+
+/* Utilidades */
+.text-center { text-align: center !important; }
+.mt-20 { margin-top: 20px !important; }
+.mb-20 { margin-bottom: 20px !important; }
+.ml-10 { margin-left: 10px !important; }
+.mr-10 { margin-right: 10px !important; }
+
+/* Estilos para tablas */
+.table-container {
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+/* Estilos para cards */
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* Estilos para badges */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  
+  &.completed {
+    background-color: #e8f5e9;
+    color: var(--success-color);
+  }
+  
+  &.inprogress {
+    background-color: #e3f2fd;
+    color: var(--primary-color);
+  }
+  
+  &.todo {
+    background-color: #fff3e0;
+    color: var(--warning-color);
+  }
+  
+  &.blocked {
+    background-color: #ffebee;
+    color: var(--danger-color);
+  }
+}
+
+/* Estilos para riesgo */
+.high-risk {
+  color: var(--danger-color);
+  font-weight: bold;
+}
+
+.low-risk {
+  color: var(--success-color);
+}
+
+/* Snackbar personalizado */
+.error-snackbar {
+  background-color: var(--danger-color) !important;
+  color: white !important;
+}
+
+.success-snackbar {
+  background-color: var(--success-color) !important;
+  color: white !important;
+}
+
+.mat-mdc-select-panel {
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.mat-mdc-option {
+  background-color: #ffffff !important;
+}
+
+/* Texto visible */
+.mat-mdc-option .mdc-list-item__primary-text {
+  color: #000000 !important;
+}

@@ -1,0 +1,108 @@
+<div class="task-form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="form-icon">add_task</mat-icon>
+        Nueva Tarea
+      </mat-card-title>
+      <mat-card-subtitle>Cree una nueva tarea para asignar a un desarrollador</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form">
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Proyecto *</mat-label>
+          <mat-select formControlName="projectId" required>
+            <mat-option *ngFor="let project of projects" [value]="project.projectId">
+              {{ project.name }} ({{ project.clientName }})
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="projectId?.invalid && projectId?.touched">
+            El proyecto es requerido
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Título *</mat-label>
+          <input matInput formControlName="title" maxlength="200" required>
+          <mat-hint align="end">{{ title?.value?.length || 0 }}/200</mat-hint>
+          <mat-error *ngIf="title?.invalid && title?.touched">
+            <span *ngIf="title?.errors?.['required']">El título es requerido</span>
+            <span *ngIf="title?.errors?.['maxlength']">Máximo 200 caracteres</span>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput formControlName="description" rows="4" maxlength="2000"></textarea>
+          <mat-hint align="end">{{ description?.value?.length || 0 }}/2000</mat-hint>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Asignado a *</mat-label>
+            <mat-select formControlName="assigneeId" required>
+              <mat-option *ngFor="let developer of developers" [value]="developer.developerId">
+                {{ developer.fullName }} ({{ developer.email }})
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="assigneeId?.invalid && assigneeId?.touched">
+              El desarrollador es requerido
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Estado *</mat-label>
+            <mat-select formControlName="status" required>
+              <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                {{ status.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Prioridad *</mat-label>
+            <mat-select formControlName="priority" required>
+              <mat-option *ngFor="let priority of priorityOptions" [value]="priority.value">
+                {{ priority.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Complejidad Estimada</mat-label>
+            <mat-select formControlName="estimatedComplexity">
+              <mat-option value="">No especificar</mat-option>
+              <mat-option *ngFor="let complexity of complexityOptions" [value]="complexity.value">
+                {{ complexity.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Fecha de Vencimiento</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dueDate">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-hint>Opcional - Fecha límite para completar la tarea</mat-hint>
+        </mat-form-field>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button type="button" (click)="onCancel()" [disabled]="isSubmitting">
+        <mat-icon>cancel</mat-icon> Cancelar
+      </button>
+      <button mat-raised-button color="primary" type="submit" 
+              (click)="onSubmit()" [disabled]="isSubmitting || taskForm.invalid">
+        <mat-icon *ngIf="!isSubmitting">save</mat-icon>
+        <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+        {{ isSubmitting ? 'Creando...' : 'Crear Tarea' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

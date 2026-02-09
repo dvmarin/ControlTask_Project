@@ -1,0 +1,197 @@
+<div class="tasks-container">
+  <!-- Encabezado -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon>assignment</mat-icon>
+      </div>
+      <mat-card-title>Tareas del Proyecto</mat-card-title>
+      <mat-card-subtitle>
+         Total: {{ totalCount }} tareas | Página {{ pageNumber }} de {{ getTotalPages() }}
+      </mat-card-subtitle>
+        <div class="task-header" style="margin-left: auto;">        
+        <button mat-raised-button color="primary" routerLink="/tasks/new">
+        <mat-icon>add</mat-icon> Nueva Tarea
+        </button>
+  </div>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Panel de filtros -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-container">
+        <!-- Filtro por estado -->
+        <mat-form-field >
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="statusFilter">
+            <mat-option value="">Todos los estados</mat-option>
+            <mat-option *ngFor="let status of statusOptions" [value]="status">
+              {{ status }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Filtro por desarrollador -->
+        <mat-form-field *ngIf="assigneeOptions.length > 0">
+          <mat-label>Desarrollador</mat-label>
+          <mat-select [(ngModel)]="assigneeFilter">
+            <mat-option value="">Todos los desarrolladores</mat-option>
+            <mat-option *ngFor="let assignee of assigneeOptions" [value]="assignee">
+              {{ assignee }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Botones de acción -->
+        <div class="filter-actions">
+          <button mat-raised-button color="primary" (click)="applyFilters()">
+            <mat-icon>filter_list</mat-icon>
+            Aplicar Filtros
+          </button>
+          <button mat-button color="warn" (click)="clearFilters()">
+            <mat-icon>clear_all</mat-icon>
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tabla de tareas -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Spinner de carga -->
+      <div *ngIf="isLoading" class="loading-spinner">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Cargando tareas...</span>
+      </div>
+
+      <!-- Tabla -->
+      <div *ngIf="!isLoading">
+        <div class="table-responsive">
+          <table mat-table [dataSource]="tasks" matSort class="tasks-table">
+            
+            <!-- Columna Título -->
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Título </th>
+              <td mat-cell *matCellDef="let task" (click)="viewTaskDetails(task)" class="clickable-cell">
+                <div class="title-container">
+                  <span class="task-title">{{ task.title }}</span>
+                  <span *ngIf="isOverdue(task.dueDate)" class="overdue-badge">
+                    <mat-icon>warning</mat-icon> Vencida
+                  </span>
+                </div>
+                <div class="task-description">{{ task.description | slice:0:60 }}...</div>
+              </td>
+            </ng-container>
+
+            <!-- Columna Asignado -->
+            <ng-container matColumnDef="assigneeName">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Asignado a </th>
+              <td mat-cell *matCellDef="let task">
+                <div class="assignee-cell">
+                  <mat-icon class="person-icon">person</mat-icon>
+                  <span>{{ task.assigneeName || 'Sin asignar' }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna Estado -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
+              <td mat-cell *matCellDef="let task">
+                <mat-chip [color]="getStatusColor(task.status)" selected class="status-chip">
+                  {{ task.status }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Columna Prioridad -->
+            <ng-container matColumnDef="priority">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Prioridad </th>
+              <td mat-cell *matCellDef="let task">
+                <mat-chip [color]="getPriorityColor(task.priority)" selected class="priority-chip">
+                  <mat-icon *ngIf="task.priority === 'High'">arrow_upward</mat-icon>
+                  <mat-icon *ngIf="task.priority === 'Medium'">horizontal_rule</mat-icon>
+                  <mat-icon *ngIf="task.priority === 'Low'">arrow_downward</mat-icon>
+                  {{ task.priority }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Columna Complejidad -->
+            <ng-container matColumnDef="estimatedComplexity">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Complejidad </th>
+              <td mat-cell *matCellDef="let task">
+                <div class="complexity-container">
+                  <div class="complexity-bars">
+                    <span *ngFor="let i of [1,2,3,4,5]" 
+                          [class.active]="i <= task.estimatedComplexity"
+                          [class.high]="task.estimatedComplexity >= 4"
+                          [class.medium]="task.estimatedComplexity === 3"
+                          [class.low]="task.estimatedComplexity <= 2">
+                    </span>
+                  </div>
+                  <span class="complexity-value">{{ task.estimatedComplexity }}/5</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna Fecha Creación -->
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Creado </th>
+              <td mat-cell *matCellDef="let task">
+                {{ formatDate(task.createdAt) }}
+              </td>
+            </ng-container>
+
+            <!-- Columna Fecha Límite -->
+            <ng-container matColumnDef="dueDate">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Límite </th>
+              <td mat-cell *matCellDef="let task" [class.overdue]="isOverdue(task.dueDate)">
+                {{ formatDate(task.dueDate) }}
+                <span *ngIf="isOverdue(task.dueDate)" class="overdue-text">
+                  <mat-icon>warning</mat-icon>
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Columna Acciones -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>  </th>
+              <td mat-cell *matCellDef="let task" class="actions-cell">
+
+              </td>
+            </ng-container>
+            
+
+            <!-- Row definitions -->
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row 
+                *matRowDef="let row; columns: displayedColumns;"
+                class="clickable-row">
+            </tr>
+          </table>
+        </div>
+
+        <!-- Paginación -->
+        <mat-paginator [length]="totalCount"
+                      [pageSize]="pageSize"
+                      [pageSizeOptions]="pageSizeOptions"
+                      [pageIndex]="pageNumber - 1"
+                      (page)="onPageChange($event)"
+                      aria-label="Seleccionar página"
+                      class="tasks-paginator">
+        </mat-paginator>
+
+        <!-- Mensaje si no hay tareas -->
+        <div *ngIf="tasks.length === 0" class="no-tasks">
+          <mat-icon>assignment</mat-icon>
+          <h3>No se encontraron tareas</h3>
+          <p>Intenta cambiar los filtros o crear una nueva tarea</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

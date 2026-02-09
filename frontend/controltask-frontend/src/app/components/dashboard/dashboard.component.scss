@@ -1,0 +1,185 @@
+/* ================= VARIABLES ================= */
+$primary: #3f51b5;
+$bg-light: #f5f7fb;
+$border: #e0e0e0;
+$text-muted: #6b7280;
+
+/* ================= CONTENEDOR ================= */
+.dashboard-container {
+  padding: 24px;
+  background: $bg-light;
+  min-height: 100vh;
+}
+
+h1 {
+  margin-bottom: 24px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* ================= KPI ================= */
+.kpi-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.kpi-card {
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  border: 1px solid $border;
+
+  .kpi-title {
+    font-size: 14px;
+    color: $text-muted;
+  }
+
+  .kpi-value {
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  &.high-risk {
+    background: #fff5f5;
+    color: #c62828;
+    border-color: #ffcdd2;
+  }
+}
+
+/* ================= SECCIONES ================= */
+.dashboard-section {
+  margin-bottom: 32px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid $border;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+
+  h2 {
+    padding: 16px 20px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    border-bottom: 1px solid $border;
+    background: #ffffff;
+    border-radius: 12px 12px 0 0;
+  }
+}
+
+/* ================= TABLAS ================= */
+.table-container {
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 0 0 12px 12px;
+}
+
+.mat-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Celdas */
+td.mat-cell {
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #111827;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.attention-row {
+  background-color: #faf5d3 !important;
+}
+
+/* ================= LINKS ================= */
+.project-link {
+  color: $primary;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ================= ESTADO POR PROYECTO ================= */
+.task-count,
+.open-tasks,
+.completed-tasks {
+  display: inline-block;
+  min-width: 28px;
+  text-align: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.task-count.high-count {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.open-tasks {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.completed-tasks {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* ================= RIESGO ================= */
+.high-risk-badge,
+.low-risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.high-risk-badge {
+  background: #fdecea;
+  color: #c62828;
+}
+
+.low-risk-badge {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* ================= LOADING ================= */
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  color: $text-muted;
+}
+
+.empty-state {
+  padding: 24px;
+  text-align: center;
+  color: $text-muted;
+  font-style: italic;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  th.mat-header-cell,
+  td.mat-cell {
+    padding: 12px;
+  }
+}

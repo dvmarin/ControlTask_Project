@@ -1,0 +1,186 @@
+/* ================= VARIABLES ================= */
+$primary: #3f51b5;
+$bg-light: #f5f7fb;
+$border: #e0e0e0;
+$text-muted: #6b7280;
+
+/* ================= CONTENEDOR ================= */
+.projects-container {
+  padding: 24px;
+  background: $bg-light;
+  min-height: 100vh;
+}
+
+/* ================= HEADER ================= */
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+
+  h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+/* ================= LOADING ================= */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 320px;
+  color: $text-muted;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid $border;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+
+  mat-spinner {
+    margin-bottom: 16px;
+  }
+}
+
+/* ================= EMPTY STATE ================= */
+.no-projects {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 320px;
+  color: $text-muted;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid $border;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    color: #c7cdd8;
+  }
+
+  p {
+    font-size: 15px;
+  }
+}
+
+/* ================= LISTADO / TABLA ================= */
+.projects-list {
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid $border;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+
+  .mat-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  /* Header */
+  th.mat-header-cell {
+    background: #f9fafb;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 14px 18px;
+    border-bottom: 1px solid $border;
+  }
+
+  /* Celdas */
+  td.mat-cell {
+    padding: 14px 18px;
+    font-size: 14px;
+    color: #111827;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* Hover */
+  .mat-row {
+    transition: background-color 0.15s ease;
+  }
+
+  .mat-row:hover {
+    background-color: #f9fafb;
+  }
+
+  .mat-row:last-child td {
+    border-bottom: none;
+  }
+
+  /* Links */
+  .project-link {
+    color: $primary;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* ================= STATUS BADGES ================= */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  &.planned {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+
+  &.inprogress {
+    background-color: #fff3e0;
+    color: #f57c00;
+  }
+
+  &.completed {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+}
+
+/* ================= HIGHLIGHT ================= */
+.highlight {
+  background: #fff7ed;
+  color: #f57c00;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .projects-container {
+    padding: 16px;
+  }
+
+  .projects-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  th.mat-header-cell,
+  td.mat-cell {
+    padding: 12px;
+  }
+}

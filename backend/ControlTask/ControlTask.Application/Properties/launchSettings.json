@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ControlTask.Application": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -1,0 +1,48 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: controltask-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong@Passw0rd"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+      - ./scripts:/scripts
+    networks:
+      - controltask-network
+
+  api:
+    build: ./backend/ControlTask
+    container_name: controltask-api
+    depends_on:
+      sqlserver:
+        condition: service_started
+    environment:
+      - ConnectionStrings__DefaultConnection=Data Source=sqlserver;Initial Catalog=TeamTasksSample;User ID=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5295:80"
+    networks:
+      - controltask-network
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend/controltask-frontend
+    container_name: controltask-frontend
+    depends_on:
+      - api
+    ports:
+      - "4200:80"
+    networks:
+      - controltask-network
+
+networks:
+  controltask-network:
+    name: controltask-network
+    driver: bridge
+
+volumes:
+  sqlserver-data:

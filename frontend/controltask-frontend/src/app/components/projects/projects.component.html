@@ -1,0 +1,84 @@
+<div class="projects-container">
+  <div class="projects-header">
+    <h1>Tareas por Proyecto</h1>
+    <button mat-raised-button color="primary" routerLink="/tasks/new">
+      <mat-icon>add</mat-icon> New Task
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando proyectos...</p>
+  </div>
+
+  <div *ngIf="!loading && projects.length === 0" class="no-projects">
+    <mat-icon>folder_open</mat-icon>
+    <p>No hay proyectos disponibles</p>
+  </div>
+
+  <div *ngIf="!loading && projects.length > 0" class="projects-list">
+    <table mat-table [dataSource]="projects" class="mat-elevation-z2">
+      <!-- Nombre -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Título </th>
+        <td mat-cell *matCellDef="let project">
+          <a [routerLink]="['/projects', project.projectId]" class="project-link">
+            {{ project.name }}
+          </a>
+        </td>
+      </ng-container>
+
+      <!-- Cliente -->
+      <ng-container matColumnDef="clientName">
+        <th mat-header-cell *matHeaderCellDef> Cliente </th>
+        <td mat-cell *matCellDef="let project"> {{ project.clientName }} </td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Estado </th>
+        <td mat-cell *matCellDef="let project">
+          <span class="status-badge" [class]="getStatusClass(project.status)">
+            {{ project.status }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Total Tareas -->
+      <ng-container matColumnDef="totalTasks">
+        <th mat-header-cell *matHeaderCellDef> Total Tareas </th>
+        <td mat-cell *matCellDef="let project"> {{ project.totalTasks }} </td>
+      </ng-container>
+
+      <!-- Tareas Abiertas -->
+      <ng-container matColumnDef="openTasks">
+        <th mat-header-cell *matHeaderCellDef> Abiertas </th>
+        <td mat-cell *matCellDef="let project" [class.highlight]="shouldHighlight(project)">
+          {{ project.openTasks }}
+        </td>
+      </ng-container>
+
+      <!-- Tareas Completadas -->
+      <ng-container matColumnDef="completedTasks">
+        <th mat-header-cell *matHeaderCellDef> Completadas </th>
+        <td mat-cell *matCellDef="let project"> {{ project.completedTasks }} </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Acciones </th>
+        <td mat-cell *matCellDef="let project">
+          <button mat-icon-button color="primary" [routerLink]="['/projects', project.projectId]" matTooltip="Ver detalles">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" [routerLink]="['/tasks/new']" [queryParams]="{projectId: project.projectId}" matTooltip="Crear tarea">
+            <mat-icon>add_task</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>
